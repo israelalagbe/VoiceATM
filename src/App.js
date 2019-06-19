@@ -1,71 +1,77 @@
-import React, { Component, Fragment, useState } from 'react';
-import { Route, Redirect, Switch, withRouter } from 'react-router-dom'
-import { inject, observer } from 'mobx-react';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import React, { Component } from 'react';
 /* import logo from './logo.svg'; */
 import './App.css';
-import Header from './components/Header'
-import Main from './components/Main'
-import Login from './pages/Login'
-import Register from './pages/Register';
-import { observable, decorate, action } from 'mobx';
 import { Robot } from './utils/Robot';
+import SecretNumber from './components/SecretNumber';
+import { observer, inject } from 'mobx-react';
+import { decorate, observable, action } from 'mobx';
+import { HashRouter, withRouter } from 'react-router-dom';
+import Card from '@material-ui/core/Card';
+import SelectTransaction from './components/SelectTransaction';
+import SelectAccountType from './components/SelectAccountType';
+import Withdrawal from './components/Withdrawal';
+import TakeCash from './components/TakeCash';
+import alertify from 'alertifyjs';
+
 class App extends Component {
-  step = 1;
-  password="";
-  /**
-   * @type {Robot}
-   */
-  propTypes={robot:Robot}
-  setStep(step) {
+  step = '';
+  type=null;
+  setStep = (step) => {
     this.step = step;
   }
+  nextStep = (step) => {
+    this.setStep(this.step + 1);
+  }
+  setType = (type) => {
+    this.type=type;
+  }
+  showPincode = () => {
+    this.setStep("pincode");
+  }
+  showSelectTransaction = () => {
+    this.setStep("select_transaction");
+  }
+  showSelectAccountType = () => {
+    this.setStep("select_account_type");
+    ///balance/i.test('balance')
+  }
+  showTakeCash = () => {
+    this.setStep("take_cash");
+  }
+  nextAfterAccountType= ()=>{
+    this.setStep(this.type.toLowerCase())
+  }
   componentDidMount() {
-    const {robot} = this.props;
+    const { robot } = this.props;
     document.body.click()
-    robot.say("Welcome")
-    robot.say("Please enter your secret number")
+    alertify.alert("Click ok to continue", ()=>{
+      robot.say("Welcome")
+      robot.say("Please say your secret number")
+      this.showPincode()
+    });
   }
   render() {
-    if (this.step == 1) {
-      return (
-        this.newMethod()
-      );
-    }
-    else{
-      return null;
-    }
-
-  }
-  submit = (e) => {
-    e.preventDefault()
-    const {robot} = this.props;
-    robot.say("Please wait while your transaction is processing: ")
-    //this.setStep(this.step + 1)
-  }
-  setPassword=(event)=>{
-    this.password=event.target.value
-   
-  }
-
-  newMethod() {
-    return <div className="atm">
-      <div className="screen">
-        <h1 style={{ color: 'white', textAlign: 'center' }}>Please say your secret number</h1>
-        <form onSubmit={this.submit} style={{textAlign:'center'}}>
-          <input type="text" onChange={this.setPassword} />
-          <input type="submit" value="Submit"  />
-        </form>
+    console.log(this.step)
+    return (
+      <div className="atm">
+        <Card className="screen">
+          {this.step === 'pincode' ? <SecretNumber next={this.showSelectTransaction} /> : null}
+          {this.step === 'select_transaction' ? <SelectTransaction next={this.showSelectAccountType} setType={this.setType} /> : null}
+          {this.step === 'select_account_type' ? <SelectAccountType next={this.nextAfterAccountType} setType={this.setType} /> : null}
+          {this.step === 'withdrawal' ? <Withdrawal next={this.showTakeCash} /> : null}
+          {this.step === 'take_cash' ? <TakeCash next={this.nextAfterAccountType}  /> : null}
+        </Card>
       </div>
-    </div>;
+    );
   }
 }
 //
-export default withRouter(inject('robot')(
-  observer(decorate(App, {
-    step: observable,
-    setStep: action,
-    password: observable,
-    setPassword: action
-  }))
-));
+export default
+  withRouter(inject('robot')(
+    observer(decorate(App, {
+      step: observable,
+      setStep: action,
+      password: observable,
+      setPassword: action
+    }))
+  ));

@@ -28,7 +28,9 @@ class App extends Component {
   showPincode = () => {
     this.setStep("pincode");
   }
-  showSelectTransaction = () => {
+  showSelectTransaction = async () => {
+    const { robot } = this.props;
+    await robot.say("Please wait while your transaction is processing: ")
     this.setStep("select_transaction");
   }
   showSelectAccountType = () => {
@@ -46,7 +48,6 @@ class App extends Component {
     document.body.click()
     alertify.alert("Click ok to continue", ()=>{
       robot.say("Welcome")
-      robot.say("Please say your secret number")
       this.showPincode()
     });
   }
@@ -57,7 +58,7 @@ class App extends Component {
         <Card className="screen">
           {this.step === 'pincode' ? <SecretNumber next={this.showSelectTransaction} /> : null}
           {this.step === 'select_transaction' ? <SelectTransaction next={this.showSelectAccountType} setType={this.setType} /> : null}
-          {this.step === 'select_account_type' ? <SelectAccountType next={this.nextAfterAccountType} setType={this.setType} /> : null}
+          {this.step === 'select_account_type' ? <SelectAccountType next={this.nextAfterAccountType} /> : null}
           {this.step === 'withdrawal' ? <Withdrawal next={this.showTakeCash} /> : null}
           {this.step === 'take_cash' ? <TakeCash next={this.nextAfterAccountType}  /> : null}
         </Card>

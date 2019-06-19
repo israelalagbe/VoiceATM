@@ -7,14 +7,20 @@ import Input from '@material-ui/core/Input';
 class SecretNumber extends Component {
     password = ""
     componentDidMount() {
+        this.listenToPassword()
+        
+    }
+     listenToPassword=async ()=>{
         const { robot, next } = this.props;
-        robot.listen().then((result) => {
+        await robot.say("Please say your secret number")
+        try {
+            let result=await robot.listen()
             this.setPassword(result)
             this.submit()
-        }, (error) => {
-            alert(error)
-            robot.say("Invalid password")
-        })
+        } catch (error) {
+            await robot.say(error)
+            this.listenToPassword()
+        }
     }
     submit = async (e) => {
         // eslint-disable-next-line no-unused-expressions
@@ -22,7 +28,7 @@ class SecretNumber extends Component {
         const { robot, next } = this.props;
         
         if(this.password){
-            robot.say("Please wait while your transaction is processing: ")
+        
             setTimeout(() => {
                 next()
             }, 500);

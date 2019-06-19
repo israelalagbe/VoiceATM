@@ -8,16 +8,25 @@ import { Button } from '@material-ui/core';
 class SelectTransaction extends Component {
     password = ""
     componentDidMount() {
-        const { robot, next } = this.props;
-        robot.say("Select a transaction")
-        robot.listen().then(function(text){
+        this.listenToTransactionType()
+    }
+     listenToTransactionType=async ()=>{
+        const { robot, next, setType } = this.props;
+        await robot.say("Select a transaction")
+        try {
+            let text=await robot.listen()
             if(text.toLowerCase()==="withdrawal"){
+                setType(text.toLowerCase());
                 next()
             }
             else{
-                robot.say("Can't understand your option")
+                await robot.say("Can't understand your option");
+                setTimeout(this.listenToTransactionType, 0);
             }
-        });
+        } catch (error) {
+            await robot.say(error)
+            this.listenToTransactionType()
+        }
     }
     buttonClick=(e)=>{
         const { setType,next } = this.props;

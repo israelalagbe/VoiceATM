@@ -13,7 +13,22 @@ class Withdrawal extends Component {
     componentDidMount() {
         
     }
-
+    listenToAccountType=()=>{
+        const { robot, next, setType } = this.props;
+        robot.say("Select a transaction")
+        robot.listen().then(function(text){
+            if(['current','savings'].includes(text.toLowerCase())){
+                next()
+            }
+            else{
+                robot.say("Can't understand your option")
+            }
+        })
+        .catch((error) => {
+            robot.say(error)
+            setTimeout(this.listenToAccountType, 500);
+        });;
+    }
     render() {
         const { robot, next } = this.props;
 

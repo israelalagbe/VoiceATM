@@ -8,9 +8,24 @@ import { Button } from '@material-ui/core';
 class SelectAccountType extends Component {
     password = ""
     componentDidMount() {
-        
+        this.listenToAccountType()
     }
-
+    listenToAccountType=async ()=>{
+        const { robot, next } = this.props;
+        await robot.say("Select your account type")
+        try {
+            let text = await robot.listen();
+            if(['current','savings'].includes(text.toLowerCase())){
+                next()
+            }
+            else{
+                await robot.say("Can't understand your option")
+            }
+        } catch (error) {
+            await robot.say(error)
+            this.listenToAccountType()
+        }
+    }
     render() {
         const { robot, next } = this.props;
 

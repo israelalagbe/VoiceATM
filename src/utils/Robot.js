@@ -32,9 +32,9 @@ export class Robot {
     listen() {
         return new Promise((resolve, reject) => {
             if(this.islistening()){
-                //const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+                const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
                 this.recognition.stop()
-                //this.recognition = new SpeechRecognition();
+                this.recognition = new SpeechRecognition();
             }
             this.recognition.addEventListener('result', function (event) {
                 this.recognizing = true;

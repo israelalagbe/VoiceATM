@@ -11,7 +11,8 @@ class TakeCash extends Component {
         this.amount=amount
     }
     componentDidMount() {
-        
+        const { robot, next } = this.props;
+        robot.say("Please take your cash!")
     }
 
     render() {

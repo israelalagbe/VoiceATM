@@ -5,29 +5,29 @@ import { withRouter } from 'react-router-dom';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import { Button } from '@material-ui/core';
+import { sleep } from '../utils/sleep';
 class Withdrawal extends Component {
     amount = ''
     setAmount = (amount)=>{
         this.amount=amount
     }
     componentDidMount() {
-        
+        this.listenToAmountToWithdraw()
     }
-    listenToAccountType=()=>{
+    listenToAmountToWithdraw=async ()=>{
         const { robot, next, setType } = this.props;
-        robot.say("Select a transaction")
-        robot.listen().then(function(text){
-            if(['current','savings'].includes(text.toLowerCase())){
-                next()
-            }
-            else{
-                robot.say("Can't understand your option")
-            }
-        })
-        .catch((error) => {
-            robot.say(error)
-            setTimeout(this.listenToAccountType, 500);
-        });;
+        try {
+            await robot.say("Say the amount to withdraw")
+            let text = await robot.listen();
+            this.setAmount(text)
+            await sleep(1000)
+            next()
+    
+        } catch (error) {
+            console.error(error)
+            await robot.say(error);
+            this.listenToAmountToWithdraw()
+        }
     }
     render() {
         const { robot, next } = this.props;

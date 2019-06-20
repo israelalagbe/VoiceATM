@@ -4,6 +4,7 @@ import { decorate, observable, action } from 'mobx';
 import { withRouter } from 'react-router-dom';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
+import { sleep } from '../utils/sleep';
 class SecretNumber extends Component {
     password = ""
     componentDidMount() {
@@ -16,6 +17,7 @@ class SecretNumber extends Component {
         try {
             let result=await robot.listen()
             this.setPassword(result)
+            sleep(500)
             this.submit()
         } catch (error) {
             await robot.say(error)

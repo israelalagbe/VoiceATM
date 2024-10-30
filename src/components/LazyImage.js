@@ -12,17 +12,10 @@ export default class LazyImage extends Component {
 
             image.src = nextProps.src;
             image.onload = () => {
-
                 this.setState({ src: image.src })
                 console.log("Loaded lazy image", this.src)
-
             }
         }
-
-        /* if (nextProps.value !== this.state.value) { 
-            const {}=this.props;
-          this.setState({value: nextProps.value})
-        } */
     }
     render() {
         const { } = this.props;
